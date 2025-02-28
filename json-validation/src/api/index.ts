@@ -7,7 +7,6 @@ export const fetchMockData = async (url: string): Promise<string> => {
     const json = await response.json();
     return json;
   } catch (err) {
-    console.error(err);
-    return '';
+    return String(err);
   }
 };
