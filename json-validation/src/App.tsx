@@ -1,13 +1,12 @@
 import { useState } from "react";
+import { validate } from "jsonschema";
 import "./App.css";
 import {
   fetchMockData,
-  JSON_PLACEHOLDER_SCHEMA_URL,
-  JSON_PLACEHOLDER_URL,
   RANDOM_USER_SCHEMA_URL,
   RANDOM_USER_URL,
 } from "./api";
-import { Loader } from "./components/Loader";
+import { JsonPreview, Loader } from "./view";
 
 function App() {
   const [state, setState] = useState({
@@ -40,30 +39,28 @@ function App() {
         {state.isLoading && <Loader />}
       </div>
 
-      <button onClick={() => { }}>Проверить</button>
+      <button onClick={() => handleValidate(state.json, state.schema)}>Проверить</button>
 
       <div className="flex-wrapper">
-        {state.json && (
-          <div>
-            <h2>JSON</h2>
-            <pre>{state.json}</pre>
-          </div>
-        )}
-        {state.schema && (
-          <div>
-            <h2>JSON Schema</h2>
-            <pre>{state.schema}</pre>
-          </div>
-        )}
+        <JsonPreview title="JSON" data={state.json} />
+        <JsonPreview title="JSON Schema" data={state.schema} />
       </div>
     </>
   );
 }
 
-const setJsonState = (json: PromiseSettledResult<string>, error: string) => {
+function setJsonState(json: PromiseSettledResult<string>, error: string) {
   return json.status === "fulfilled"
     ? JSON.stringify(json.value, null, 2)
     : `${error}: ${json.reason}`;
+}
+
+function handleValidate(json: string, schema: string) {
+  if (json && schema) {
+    console.log('before')
+    console.log(validate(JSON.parse(json), JSON.parse(schema)))
+    console.log('after')
+  }
 }
 
 export default App;
